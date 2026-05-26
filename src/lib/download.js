@@ -1,6 +1,6 @@
 import JSZip from 'jszip'
 
-const BASE = '/template/xyz.kumaraswamy.itoo'
+const BASE = `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}template/xyz.kumaraswamy.itoo`
 
 const TEMPLATE_FILES = [
   { zipPath: 'xyz.kumaraswamy.itoo/aiwebres/icon.png',      url: `${BASE}/aiwebres/icon.png`,      binary: true  },

@@ -4,6 +4,11 @@ import TypeSelector from './components/TypeSelector'
 import PermissionsConfig from './components/PermissionsConfig'
 import PreviewDownload from './components/PreviewDownload'
 import { buildComponentBuildInfos } from './lib/buildJson'
+import {
+  hasMissingSpecialUseDescription,
+  normalizeAdditionalPermissionIds,
+  normalizeConfig,
+} from './lib/configValidation'
 import { downloadAix } from './lib/download'
 
 const STEPS = ['Service Types', 'Permissions', 'Download']
@@ -13,8 +18,23 @@ function parseUrlConfig() {
   const types = p.get('t') ? new Set(p.get('t').split(',').filter(Boolean)) : new Set()
   const perms = p.get('p') ? new Set(p.get('p').split(',').filter(Boolean)) : new Set()
   const desc = p.get('s') ?? ''
-  const step = types.size > 0 ? 2 : 0
-  return { types, perms, desc, step }
+  const config = normalizeConfig({ selectedTypeIds: types, additionalPermissions: perms, specialUseText: desc })
+  const step = config.selectedTypeIds.size > 0 ? 2 : 0
+
+  return {
+    types: config.selectedTypeIds,
+    perms: config.additionalPermissions,
+    desc: config.specialUseText,
+    step,
+  }
+}
+
+function setsEqual(a, b) {
+  if (a.size !== b.size) return false
+  for (const value of a) {
+    if (!b.has(value)) return false
+  }
+  return true
 }
 
 export default function App() {
@@ -33,6 +53,13 @@ export default function App() {
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
+
+  useEffect(() => {
+    setAdditionalPermissions(prev => {
+      const next = normalizeAdditionalPermissionIds(prev, selectedIds)
+      return setsEqual(prev, next) ? prev : next
+    })
+  }, [selectedIds])
 
   const showToast = useCallback(msg => {
     clearTimeout(toastTimer.current)
@@ -61,6 +88,10 @@ export default function App() {
       showToast('Select at least one service type')
       return
     }
+    if (hasMissingSpecialUseDescription(selectedIds, specialUseText)) {
+      showToast('Enter a special use description')
+      return
+    }
     setStep(s => s + 1)
   }
 
@@ -72,18 +103,22 @@ export default function App() {
       const json = buildComponentBuildInfos({ selectedTypeIds: selectedIds, additionalPermissions, specialUseText })
       await downloadAix(json)
     } catch (e) {
-      showToast('Download failed: ' + e.message)
+      showToast('Download failed: ' + (e instanceof Error ? e.message : String(e)))
     } finally {
       setDownloading(false)
     }
   }
 
   const handleShare = async () => {
+    const config = normalizeConfig({ selectedTypeIds: selectedIds, additionalPermissions, specialUseText })
     const p = new URLSearchParams()
-    if (selectedIds.size) p.set('t', [...selectedIds].join(','))
-    if (additionalPermissions.size) p.set('p', [...additionalPermissions].join(','))
-    if (specialUseText.trim()) p.set('s', specialUseText.trim())
-    const url = `${window.location.origin}${window.location.pathname}?${p.toString()}`
+    if (config.selectedTypeIds.size) p.set('t', [...config.selectedTypeIds].join(','))
+    if (config.additionalPermissions.size) p.set('p', [...config.additionalPermissions].join(','))
+    if (config.selectedTypeIds.has('specialUse') && config.specialUseText.trim()) {
+      p.set('s', config.specialUseText.trim())
+    }
+    const query = p.toString()
+    const url = `${window.location.origin}${window.location.pathname}${query ? `?${query}` : ''}`
     try {
       await navigator.clipboard.writeText(url)
       showToast('Link copied!')

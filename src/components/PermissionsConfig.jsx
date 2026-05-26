@@ -1,4 +1,4 @@
-import { SERVICE_TYPES } from '../data/serviceTypes'
+import { getSelectedServiceTypes } from '../lib/configValidation'
 
 function PermTag({ label }) {
   return <span className="perm-tag">{label}</span>
@@ -29,7 +29,7 @@ function PermCheck({ id, label, desc, since, until, checked, onChange }) {
 }
 
 export default function PermissionsConfig({ selectedIds, additionalPermissions, onTogglePerm, specialUseText }) {
-  const selectedTypes = SERVICE_TYPES.filter(t => selectedIds.has(t.id))
+  const selectedTypes = getSelectedServiceTypes(selectedIds)
 
   return (
     <div className="perm-config">

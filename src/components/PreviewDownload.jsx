@@ -1,5 +1,5 @@
-import { SERVICE_TYPES } from '../data/serviceTypes'
 import { buildComponentBuildInfos } from '../lib/buildJson'
+import { getSelectedServiceTypes, hasMissingSpecialUseDescription } from '../lib/configValidation'
 
 const BASE_PERMISSIONS = new Set([
   'android.permission.POST_NOTIFICATIONS',
@@ -11,8 +11,14 @@ const BASE_PERMISSIONS = new Set([
 const strip = id => id.replace('android.permission.', '')
 
 export default function PreviewDownload({ selectedIds, additionalPermissions, specialUseText }) {
-  const selectedTypes = SERVICE_TYPES.filter(t => selectedIds.has(t.id))
-  const json = buildComponentBuildInfos({ selectedTypeIds: selectedIds, additionalPermissions, specialUseText })
+  const selectedTypes = getSelectedServiceTypes(selectedIds)
+  const missingSpecialUseDescription = hasMissingSpecialUseDescription(selectedIds, specialUseText)
+  const json = buildComponentBuildInfos({
+    selectedTypeIds: selectedIds,
+    additionalPermissions,
+    specialUseText,
+    strict: false,
+  })
   const extraPermissions = json[0].permissions.filter(p => !BASE_PERMISSIONS.has(p))
 
   return (
@@ -46,6 +52,15 @@ export default function PreviewDownload({ selectedIds, additionalPermissions, sp
           <div className="summary-section summary-section-border">
             <span className="summary-section-title">Special use description</span>
             <p className="summary-special-text">&ldquo;{specialUseText.trim()}&rdquo;</p>
+          </div>
+        )}
+
+        {missingSpecialUseDescription && (
+          <div className="summary-section summary-section-border">
+            <span className="summary-section-title">Special use description</span>
+            <div className="special-use-missing">
+              Add a description before downloading this AIX.
+            </div>
           </div>
         )}
 

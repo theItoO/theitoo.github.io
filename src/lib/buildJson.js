@@ -1,4 +1,5 @@
 import { SERVICE_TYPES } from '../data/serviceTypes'
+import { normalizeConfig, validateConfigForDownload } from './configValidation'
 
 const BASE_PERMISSIONS = [
   'android.permission.POST_NOTIFICATIONS',
@@ -27,8 +28,11 @@ function escapeXml(str) {
     .replace(/'/g, '&apos;')
 }
 
-export function buildComponentBuildInfos({ selectedTypeIds, additionalPermissions, specialUseText }) {
-  const selectedTypes = SERVICE_TYPES.filter(t => selectedTypeIds.has(t.id))
+export function buildComponentBuildInfos({ selectedTypeIds, additionalPermissions, specialUseText, strict = true }) {
+  const config = strict
+    ? validateConfigForDownload({ selectedTypeIds, additionalPermissions, specialUseText })
+    : normalizeConfig({ selectedTypeIds, additionalPermissions, specialUseText })
+  const selectedTypes = SERVICE_TYPES.filter(t => config.selectedTypeIds.has(t.id))
   const permissions = new Set(BASE_PERMISSIONS)
 
   selectedTypes.forEach(t => {
@@ -36,14 +40,14 @@ export function buildComponentBuildInfos({ selectedTypeIds, additionalPermission
     t.manifestPermissions.filter(p => p.required).forEach(p => permissions.add(p.id))
   })
 
-  additionalPermissions.forEach(p => permissions.add(p))
+  config.additionalPermissions.forEach(p => permissions.add(p))
 
   const activities = []
 
   if (selectedTypes.length > 0) {
     const fgsType = selectedTypes.map(t => t.xmlType).join('|')
-    const propertyLine = (selectedTypeIds.has('specialUse') && specialUseText.trim())
-      ? `<property android:name = "android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value = "${escapeXml(specialUseText.trim())}" />\n`
+    const propertyLine = (config.selectedTypeIds.has('specialUse') && config.specialUseText.trim())
+      ? `<property android:name = "android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value = "${escapeXml(config.specialUseText.trim())}" />\n`
       : ''
     activities.push(
       `<service android:exported = "true" android:foregroundServiceType = "${fgsType}" ` +

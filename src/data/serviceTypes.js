@@ -13,16 +13,6 @@ export const SERVICE_TYPES = [
     notes: 'Cannot be started while the app is in the background or on BOOT_COMPLETED.',
   },
   {
-    id: 'mediaProcessing',
-    xmlType: 'mediaProcessing',
-    label: 'Media Processing',
-    desc: 'Run heavy media work in the background, such as converting or compressing video files.',
-    fgsPermission: 'android.permission.FOREGROUND_SERVICE_MEDIA_PROCESSING',
-    manifestPermissions: [],
-    runtimePermissions: [],
-    timeout: 'Limited to 6 hours within any 24-hour period. When the time is up, Android notifies your service to wrap up — if it does not stop in time, the app will crash. On Android 14 and below, there is no notification; the app is silently moved to the background instead.',
-  },
-  {
     id: 'connectedDevice',
     xmlType: 'connectedDevice',
     label: 'Connected Device',
@@ -162,5 +152,16 @@ export const SERVICE_TYPES = [
     runtimePermissions: [],
     specialUseText: true,
     notes: 'You must explain exactly what your app does in the background. Google Play will review this before your app is published.',
+  },
+  {
+    id: 'systemExempted',
+    xmlType: 'systemExempted',
+    label: 'System Exempted',
+    desc: 'For system-level foreground work that Android explicitly exempts from the normal foreground service limits.',
+    fgsPermission: 'android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED',
+    manifestPermissions: [],
+    runtimePermissions: [],
+    systemOnly: true,
+    notes: 'Only select this if the app is eligible for Android system-exempted foreground services.',
   },
 ]

@@ -1,8 +1,10 @@
 import { useRef, useState } from 'react'
 import { SERVICE_TYPES } from '../data/serviceTypes'
+import { SPECIAL_USE_MAX_LENGTH } from '../lib/configValidation'
 
 const REGULAR = SERVICE_TYPES.filter(t => t.id !== 'specialUse')
 const SPECIAL = SERVICE_TYPES.find(t => t.id === 'specialUse')
+const GHOST_CELL_COUNT = (3 - (REGULAR.length % 3)) % 3
 
 export default function TypeSelector({ selectedIds, onToggle, specialUseText, onSpecialUseText }) {
   const [hoverDesc, setHoverDesc] = useState(null)
@@ -36,7 +38,11 @@ export default function TypeSelector({ selectedIds, onToggle, specialUseText, on
             </div>
           ))}
 
-          {/* Special Use — last row col 1 */}
+          {Array.from({ length: GHOST_CELL_COUNT }).map((_, i) => (
+            <div key={`ghost-${i}`} className="cell cell-ghost" aria-hidden="true" />
+          ))}
+
+          {/* Special Use — first column of the final row */}
           <div className="cell cell-special"
             onMouseEnter={() => setHoverDesc(SPECIAL.desc)}
             onMouseLeave={() => setHoverDesc(null)}
@@ -56,7 +62,7 @@ export default function TypeSelector({ selectedIds, onToggle, specialUseText, on
           <div className="cell cell-textarea">
             <textarea
               placeholder="Describe your special use case (required for Google Play review)…"
-              maxLength={280}
+              maxLength={SPECIAL_USE_MAX_LENGTH}
               value={specialUseText}
               onChange={e => onSpecialUseText(e.target.value)}
               onFocus={() => { if (!specialSelected) onToggle('specialUse') }}
@@ -65,7 +71,7 @@ export default function TypeSelector({ selectedIds, onToggle, specialUseText, on
                 if (specialUseText.trim() === '' && specialSelected) onToggle('specialUse')
               }}
             />
-            <span className={`char-count${charLen > 240 ? ' warn' : ''}`}>{charLen} / 280</span>
+            <span className={`char-count${charLen > 240 ? ' warn' : ''}`}>{charLen} / {SPECIAL_USE_MAX_LENGTH}</span>
           </div>
         </div>
       </div>
