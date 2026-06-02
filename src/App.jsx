@@ -194,7 +194,7 @@ export default function App() {
               <Download size={13} strokeWidth={2.2} />
               {downloading ? 'Building…' : 'Download .aix'}
             </button>
-            <button className="btn btn-share" style={{ marginLeft: 'auto' }} onClick={handleShare}>
+            <button className="btn btn-share" onClick={handleShare}>
               <Link2 size={13} strokeWidth={2.2} /> Share link
             </button>
           </>

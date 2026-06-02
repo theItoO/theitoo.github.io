@@ -11,14 +11,14 @@ export default function TypeSelector({ selectedIds, onToggle, specialUseText, on
   const clickingCbRef = useRef(false)
   const charLen = specialUseText.length
   const count = selectedIds.size
-  const pillText = count === 0 ? 'none selected' : count === 1 ? '1 selected' : `${count} selected`
+  const pillText = count === 1 ? '1 selected' : `${count} selected`
   const specialSelected = selectedIds.has('specialUse')
 
   return (
     <>
       <div className="header-row">
         <span className="label-above">Foreground service type</span>
-        <span className={`count-pill${count > 0 ? ' has-selection' : ''}`}>{pillText}</span>
+        {count > 0 && <span className="count-pill has-selection">{pillText}</span>}
       </div>
 
       <div className="card">

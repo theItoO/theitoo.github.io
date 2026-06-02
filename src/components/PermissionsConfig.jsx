@@ -113,9 +113,7 @@ export default function PermissionsConfig({ selectedIds, additionalPermissions, 
                   <span className="perm-group-title">Special use description</span>
                   {specialUseText.trim()
                     ? <div className="special-use-display">
-                        <span className="special-use-quote">&ldquo;</span>
                         <p className="special-use-text">{specialUseText.trim()}</p>
-                        <span className="special-use-quote">&rdquo;</span>
                       </div>
                     : <div className="special-use-missing">
                         No description entered — required for Google Play review.
