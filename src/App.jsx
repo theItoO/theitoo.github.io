@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { ArrowLeft, ArrowRight, Download, Link2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Download, ExternalLink, Link2 } from 'lucide-react'
 import TypeSelector from './components/TypeSelector'
 import PermissionsConfig from './components/PermissionsConfig'
 import PreviewDownload from './components/PreviewDownload'
@@ -131,9 +131,20 @@ export default function App() {
   return (
     <>
       <div className="app-header">
-        <div className="app-title-row">
-          <span className="app-title">Itoo Manifest</span>
-          <span className="app-sub">Customize your Android foreground service</span>
+        <div className="app-heading">
+          <div className="app-title-row">
+            <span className="app-title">Itoo Manifest</span>
+            <span className="app-sub">Customize your Android foreground service</span>
+          </div>
+          <a
+            className="docs-link"
+            href="https://developer.android.com/develop/background-work/services/fgs/service-types"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Android docs
+            <ExternalLink size={12} strokeWidth={2.2} />
+          </a>
         </div>
 
         <div className="step-indicator">

@@ -57,6 +57,13 @@ body {
   gap: 4px;
 }
 
+.app-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .app-title {
   font-family: 'DM Mono', monospace;
   font-size: 18px;
@@ -69,6 +76,37 @@ body {
   font-size: 13px;
   color: var(--text-muted);
   letter-spacing: 0.01em;
+}
+
+.docs-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 5px 8px;
+  border: 1px solid var(--green-border);
+  border-radius: 7px;
+  color: var(--green-mid);
+  background: rgba(255,255,255,.42);
+  font-family: 'DM Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 0.13s, border-color 0.13s, color 0.13s;
+}
+
+.docs-link:hover {
+  background: var(--cell-checked);
+  border-color: var(--green-border-strong);
+  color: var(--green);
+}
+
+.docs-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(58,125,10,.18);
+  border-color: var(--green);
 }
 
 /* ── step indicator ── */
@@ -866,8 +904,17 @@ body {
   }
 
   /* ── header ── */
+  .app-heading {
+    flex-direction: column;
+    gap: 10px;
+  }
+
   .app-title { font-size: 15px; }
   .app-sub   { font-size: 12px; }
+
+  .docs-link {
+    align-self: flex-start;
+  }
 
   /* ── step indicator: dots only, no labels or long lines ── */
   .step-label   { display: none; }
