@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, Download, Link2 } from 'lucide-react'
 import TypeSelector from './components/TypeSelector'
 import PermissionsConfig from './components/PermissionsConfig'
 import PreviewDownload from './components/PreviewDownload'
-import { buildComponentBuildInfos } from './lib/buildJson'
+import { buildComponentBuildInfos, buildExtensionHelpString } from './lib/buildJson'
 import {
   hasMissingSpecialUseDescription,
   normalizeAdditionalPermissionIds,
@@ -101,7 +101,8 @@ export default function App() {
     setDownloading(true)
     try {
       const json = buildComponentBuildInfos({ selectedTypeIds: selectedIds, additionalPermissions, specialUseText })
-      await downloadAix(json)
+      const helpString = buildExtensionHelpString({ selectedTypeIds: selectedIds, additionalPermissions, specialUseText })
+      await downloadAix(json, helpString)
     } catch (e) {
       showToast('Download failed: ' + (e instanceof Error ? e.message : String(e)))
     } finally {

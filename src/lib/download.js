@@ -10,13 +10,35 @@ const TEMPLATE_FILES = [
   { zipPath: 'xyz.kumaraswamy.itoo/extension.properties',    url: `${BASE}/extension.properties`,    binary: false },
 ]
 
-export async function downloadAix(componentBuildInfos) {
+function withExtensionHelpString(text, extensionHelpString) {
+  if (!extensionHelpString) return text
+
+  const components = JSON.parse(text)
+  components.forEach(component => {
+    if (component.type === 'xyz.kumaraswamy.itoo.Itoo') {
+      component.helpString = extensionHelpString
+    }
+  })
+
+  return JSON.stringify(components)
+}
+
+export async function downloadAix(componentBuildInfos, extensionHelpString = '') {
   const zip = new JSZip()
 
   await Promise.all(TEMPLATE_FILES.map(async ({ zipPath, url, binary }) => {
     const res = await fetch(url)
     if (!res.ok) throw new Error(`Failed to fetch template file: ${url}`)
-    zip.file(zipPath, binary ? await res.arrayBuffer() : await res.text())
+    if (binary) {
+      zip.file(zipPath, await res.arrayBuffer())
+      return
+    }
+
+    const text = await res.text()
+    zip.file(
+      zipPath,
+      zipPath.endsWith('/components.json') ? withExtensionHelpString(text, extensionHelpString) : text
+    )
   }))
 
   zip.file(

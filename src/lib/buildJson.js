@@ -19,6 +19,8 @@ const BOOT_RECEIVER =
 const START_RECEIVER =
   '<receiver android:exported = "true" android:name = "xyz.kumaraswamy.itoo.receivers.StartReceiver" />\n'
 
+const stripAndroidPermissionPrefix = permission => permission.replace('android.permission.', '')
+
 function escapeXml(str) {
   return str
     .replace(/&/g, '&amp;')
@@ -28,7 +30,7 @@ function escapeXml(str) {
     .replace(/'/g, '&apos;')
 }
 
-export function buildComponentBuildInfos({ selectedTypeIds, additionalPermissions, specialUseText, strict = true }) {
+function getBuildState({ selectedTypeIds, additionalPermissions, specialUseText, strict = true }) {
   const config = strict
     ? validateConfigForDownload({ selectedTypeIds, additionalPermissions, specialUseText })
     : normalizeConfig({ selectedTypeIds, additionalPermissions, specialUseText })
@@ -42,6 +44,37 @@ export function buildComponentBuildInfos({ selectedTypeIds, additionalPermission
 
   config.additionalPermissions.forEach(p => permissions.add(p))
 
+  return { config, selectedTypes, permissions }
+}
+
+export function buildExtensionHelpString({ selectedTypeIds, additionalPermissions, specialUseText, strict = true }) {
+  const { config, selectedTypes, permissions } = getBuildState({
+    selectedTypeIds,
+    additionalPermissions,
+    specialUseText,
+    strict,
+  })
+  const serviceTypes = selectedTypes.map(type => `${type.label} (${type.xmlType})`)
+  const permissionNames = [...permissions].map(stripAndroidPermissionPrefix)
+  const specialUseDescription = config.selectedTypeIds.has('specialUse') && config.specialUseText.trim()
+    ? `<p><b>Special use description:</b> ${escapeXml(config.specialUseText.trim())}</p>\n`
+    : ''
+
+  return (
+    '<p>Extension component for Itoo configured with Android foreground service declarations.</p>\n' +
+    `<p><b>Service types:</b> ${escapeXml(serviceTypes.join(', '))}</p>\n` +
+    `<p><b>Permissions:</b> ${escapeXml(permissionNames.join(', '))}</p>\n` +
+    specialUseDescription
+  )
+}
+
+export function buildComponentBuildInfos({ selectedTypeIds, additionalPermissions, specialUseText, strict = true }) {
+  const { config, selectedTypes, permissions } = getBuildState({
+    selectedTypeIds,
+    additionalPermissions,
+    specialUseText,
+    strict,
+  })
   const activities = []
 
   if (selectedTypes.length > 0) {
