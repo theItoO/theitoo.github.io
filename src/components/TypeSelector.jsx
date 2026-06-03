@@ -18,7 +18,7 @@ export default function TypeSelector({ selectedIds, onToggle, specialUseText, on
     <>
       <div className="header-row">
         <span className="label-above">Foreground service type</span>
-        {count > 0 && <span className="count-pill has-selection">{pillText}</span>}
+        <span className={`count-pill${count > 0 ? ' has-selection' : ''}`} aria-hidden={count === 0 ? 'true' : undefined}>{pillText}</span>
       </div>
 
       <div className="card">

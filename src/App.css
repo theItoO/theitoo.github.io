@@ -163,6 +163,11 @@ body {
   color: var(--text-muted);
 }
 
+.count-pill:not(.has-selection) {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .count-pill {
   font-family: 'DM Mono', monospace;
   font-size: 11px;
