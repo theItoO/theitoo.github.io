@@ -33,11 +33,8 @@ export default function PermissionsConfig({ selectedIds, additionalPermissions, 
 
   return (
     <div className="perm-config">
-      <div className="perm-config-header">
+      <div className="header-row">
         <span className="label-above">Configure permissions</span>
-        <span className="perm-config-sub">
-          Base permissions are always included. Select any additional ones your app needs.
-        </span>
       </div>
 
       <div className="perm-type-list">
@@ -66,7 +63,6 @@ export default function PermissionsConfig({ selectedIds, additionalPermissions, 
 
               {hasRequired && (
                 <div className="perm-group">
-                  <span className="perm-group-title">Required — always included</span>
                   {type.manifestPermissions.filter(p => p.required).map(p => (
                     <div key={p.id} className="perm-item perm-item-required">
                       <span className="perm-check-locked">✓</span>
@@ -81,7 +77,6 @@ export default function PermissionsConfig({ selectedIds, additionalPermissions, 
 
               {hasOptionalManifest && (
                 <div className="perm-group">
-                  <span className="perm-group-title">Manifest permissions</span>
                   {type.atLeastOneNote && (
                     <p className="perm-at-least-one">{type.atLeastOneNote}</p>
                   )}
@@ -97,7 +92,6 @@ export default function PermissionsConfig({ selectedIds, additionalPermissions, 
 
               {hasRuntime && (
                 <div className="perm-group">
-                  <span className="perm-group-title">Runtime permissions</span>
                   {type.runtimePermissions.map(p => (
                     <PermCheck key={p.id} id={p.id} label={p.label} desc={p.desc}
                       since={p.since} until={p.until}
